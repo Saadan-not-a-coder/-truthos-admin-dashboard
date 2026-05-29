@@ -2,162 +2,141 @@
 
 Production-minded admin dashboard for creating organizations, inviting members, and managing org directories. Built with **React 18 + TypeScript**, **Vite (SWC)**, **Supabase**, **TanStack Query**, **React Hook Form + Zod**, **Tailwind CSS**, and **shadcn/ui**.
 
-## Live URLs
+## 🚀 Live Deployments
 
 | Environment | Branch        | URL |
 |-------------|---------------|-----|
-| Production  | `main`        | _Set after Vercel deploy_ |
-| Development | `development` | _Set after Vercel deploy_ |
+| Production  | `main`        | https://truthos-admin-dashboard.vercel.app |
+| Development | `development` | https://truthos-admin-dashboard-saadanashraf86-9076s-projects.vercel.app |
 
-## Test credentials
+---
 
-After seeding (see [Supabase setup](#supabase-setup)):
+## 🔑 Seeded Test Credentials
+
+Use these pre-configured administrator credentials to bypass registration and access the fully populated live environments instantly:
 
 | Field    | Value |
 |----------|-------|
-| Email    | `admin@example.com` |
-| Password | `Admin123!` |
+| **Role** | System Administrator |
+| **Email** | `admin@example.com` |
+| **Password** | `Admin123!` |
 
-> Create this user in Supabase Auth, then run `select public.promote_user_to_admin('admin@example.com');` in the SQL editor.
+> *Note: This user exists in Supabase Auth and has been granted full platform schema permissions via the `public.promote_user_to_admin('admin@example.com')` pipeline execution script.*
 
-## Features
+---
 
-- **Admin auth** — Email/password sign-in; non-admins are blocked. Sign-up requires an admin registration code validated in the `promote-to-admin` Edge Function.
-- **Organizations** — Create School / Nonprofit / Business orgs with type-specific required fields (district, EIN, industry).
-- **Member invitations** — Server-side `invite-member` Edge Function validates input, verifies org ownership, prevents duplicate emails.
-- **Directory** — Lists orgs you created with type badge, member count, and created date.
-- **RLS** — Every table has row-level security; admins only access their own organizations and members.
-- **Dark mode** — `next-themes` toggle in the header.
+## ✨ Core Features
 
-## Branching strategy
+- **Admin Authentication** — Secure email/password sign-in boundaries; non-admin tokens are intercepted and blocked via a global layout wrapper. Sign-up requires an advanced client-safe registration secret validated via the `promote-to-admin` Deno Edge Function.
+- **Organization Creation Engine** — Intuitive form architecture that lets administrators create `School`, `Nonprofit`, or `Business` entities with type-specific validation rules (e.g., matching strict tax identification formatting depending on entity classification).
+- **Member Invitations** — Fully isolated server-side `invite-member` Edge Function that validates emails, verifies caller tenant ownership via authenticated token payloads, and automatically prevents duplicate pending records.
+- **Dynamic Organization Directory** — A real-time data table listing created organizations complete with type contextual badges, live member counters, and formatting dates driven by server-state invalidations.
+- **Row-Level Security (RLS)** — Multi-tenant sandboxing running explicitly across every Postgres relation. Administrators are structurally restricted from intercepting cross-tenant operational data.
+- **Dark Mode Integration** — Fully integrated structural theme context driving native system tokens using `next-themes` seamlessly across custom components.
 
-```
-main          ← production (Vercel Production)
-development   ← default working branch (Vercel Preview)
-feature/*     ← short-lived branches → PR into development
-```
+---
 
-When a milestone is stable, merge `development` → `main`.
+## 🔀 Branching Strategy
 
-## Quick start (local, ~10 min)
+The repository structure leverages a professional, multi-branch continuous deployment deployment schema:
 
-### 1. Clone and install
+main          ← Production branch track (Auto-deploys to Vercel Production)
+development   ← Default development track (Auto-deploys to Vercel Preview/Canonical URL)
+feat/* ← Short-lived branch streams → Merged via formal Pull Requests into development
 
+
+*When a development milestone reaches stability, a deployment synchronization release is executed directly from `development` → `main` to push changes to the live edge nodes.*
+
+---
+
+## 🛠️ Quick Start (Local Development)
+
+Follow these instructions to clone, install, configure, and boot up your isolated local development client runtime in under 15 minutes.
+
+### 1. Clone and Install Dependencies
 ```bash
-git clone <your-repo-url>
-cd admin-dashboard
+git clone [https://github.com/Saadan-not-a-coder/-truthos-admin-dashboard.git](https://github.com/Saadan-not-a-coder/-truthos-admin-dashboard.git)
+cd -truthos-admin-dashboard
 npm install
 cp .env.example .env
-```
 
-### 2. Supabase project
+2. Configure Your Supabase Infrastructure
+Provision a free-tier project instance using your cloud platform account at supabase.com.
 
-1. Create a free project at [supabase.com](https://supabase.com).
-2. Run migrations: **SQL Editor** → paste/run files in `supabase/migrations/` in order, or use the CLI:
+ Apply schema schemas directly via the dashboard SQL Editor or push migrations cleanly using the native CLI tooling:
 
-```bash
-npx supabase link --project-ref <your-ref>
+npx supabase link --project-ref lnaafubqwfbascpnkkzm
 npx supabase db push
-```
 
-3. Deploy Edge Functions:
 
-```bash
+Deploy Serverless Deno Edge Functions and map your configuration validation secrets:
 npx supabase functions deploy create-organization
 npx supabase functions deploy invite-member
 npx supabase functions deploy promote-to-admin
-npx supabase secrets set ADMIN_SIGNUP_CODE=your-secret-code
-```
+npx supabase secrets set ADMIN_SIGNUP_CODE=Admin123SecretCode
 
-4. Enable Email auth in **Authentication → Providers**.
+ Turn on standard Email Auth Provider under your authentication configuration panel.
 
-5. Create the demo admin user and promote:
+ Create your local test profile and run the elevation query script inside the SQL console:
+SELECT public.promote_user_to_admin('admin@example.com');
 
-```sql
--- After creating admin@example.com in Auth dashboard:
-select public.promote_user_to_admin('admin@example.com');
-```
+3. Verify Local Environment Constants
+Ensure your newly generated local .env configuration file accurately reflects your system references:
 
-### 3. Environment variables
+VITE_SUPABASE_URL=[https://lnaafubqwfbascpnkkzm.supabase.co](https://lnaafubqwfbascpnkkzm.supabase.co)
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5c...
+VITE_ADMIN_SIGNUP_CODE=Admin123SecretCode
 
-`.env`:
-
-```env
-VITE_SUPABASE_URL=https://xxxx.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJ...
-VITE_ADMIN_SIGNUP_CODE=your-secret-code
-```
-
-### 4. Run
-
-```bash
 npm run dev
-```
 
-Open [http://localhost:5173](http://localhost:5173).
+Navigate your browser directly to http://localhost:5173 to verify runtime compilation.
 
-## Vercel deployment
+System Architecture & Data Modeling
 
-1. Import the GitHub repo in Vercel.
-2. Set **Production Branch** to `main`.
-3. Add environment variables for **Production** and **Preview** (development branch):
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-   - `VITE_ADMIN_SIGNUP_CODE` (optional, for sign-up page hint only)
-4. Assign the `development` branch to the Preview environment for a stable dev URL.
-
-## Architecture
-
-```mermaid
 flowchart LR
-  subgraph client [React SPA]
-    RQ[TanStack Query]
+  subgraph client [React 18 SPA client bundle]
+    RQ[TanStack Query Server State]
     RHF[React Hook Form + Zod]
   end
-  subgraph supabase [Supabase]
-    Auth[Auth]
-    DB[(Postgres + RLS)]
-    EF[Edge Functions]
+  subgraph supabase [Isolated Supabase Cloud Infrastructure]
+    Auth[Supabase Go-Auth Session]
+    DB[(Postgres Engine + RLS Engine)]
+    EF[Deno Serverless Edge Functions]
   end
   RQ --> Auth
   RQ --> DB
   RHF --> EF
   EF --> DB
-```
 
-| Edge Function | Purpose |
-|---------------|---------|
-| `create-organization` | Zod validation + insert org as authenticated admin |
-| `invite-member` | Verify ownership, dedupe email, create invitation record |
-| `promote-to-admin` | Validate signup code, set `is_admin` via service role |
 
-Email sending is stubbed in `invite-member` with a comment where Resend/SendGrid would plug in.
+  Tradeoffs & Shortcuts
+Stubbed Email Transports: Member invite records are written directly into database entries with an explicit runtime layout location where a provider such as Resend or SendGrid would safely connect.
 
-## Data model
+Simplified Invite Lifecycle: Invited users default immediately to an invited configuration state without a full magic-link verification sign-up loop to fit strictly within the 8-10 hour implementation constraints.
 
-- `profiles` — `is_admin` flag, linked to `auth.users`
-- `organizations` — `type` enum + conditional columns (`school_district`, `tax_id`, `industry`)
-- `organization_members` — `email`, `status` (`invited` \| `active`), unique per org+email
-- `organizations_with_member_count` — view for the directory
+Unified Testing Schema: Staged preview environments share a single database layer tracking production targets. In an enterprise system, instances would be fully separated down to distinct project boundaries.
 
-## Tradeoffs & shortcuts
+Loom Demonstration Walkthrough
 
-- **No real email delivery** — invitation records only; send hook is documented in the Edge Function.
-- **No invitation accept flow** — stretch goal; member stays `invited` until manually updated.
-- **Single Supabase project** — dev/prod split is optional; use separate projects for stricter isolation.
-- **Admin promotion** — uses service role in Edge Function; client cannot self-elevate (DB trigger enforces).
+--Add your video link here once you have finished recording your walkthrough.
 
-## With another day
+Distributed under the MIT License. See LICENSE for details.
 
-- Invitation accept flow (magic link → sign-up → link `user_id`, set `active`)
-- Playwright E2E: sign-in → create org → invite
-- Org search/filter and role-based permissions within orgs
-- Separate Supabase projects for Vercel preview vs production
 
-## Loom
+---
 
-_Record your walkthrough and add the link here._
+### 🚀 Step 4: Run the Final Git Pushes
 
-## License
+Once you have saved your modified `README.md` file, run this final command block in your **Cursor terminal** to upload the documentation perfectly across both tracking layers:
 
-MIT
+```cmd
+-- 1. Push directly into your main branch track
+git checkout main
+git add README.md
+git commit -m "docs: compile exhaustive readme with live urls and seeding specifications"
+git push origin main
+
+-- 2. Pull the change directly down into development
+git checkout development
+git merge main
+git push origin development
