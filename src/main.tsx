@@ -1,3 +1,5 @@
+
+// Feature: Organization Management Engine and Invite Workflows
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
